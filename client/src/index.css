@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+:root {
+  --chunk-color-0: rgba(42, 120, 214, 0.16);
+  --chunk-color-1: rgba(235, 104, 52, 0.16);
+  --chunk-color-2: rgba(27, 175, 122, 0.16);
+  --chunk-color-3: rgba(237, 161, 0, 0.18);
+  --chunk-color-4: rgba(232, 123, 164, 0.18);
+  --chunk-color-5: rgba(0, 131, 0, 0.14);
+  --chunk-color-6: rgba(74, 58, 167, 0.16);
+  --chunk-color-7: rgba(227, 73, 72, 0.16);
+
+  --chunk-swatch-0: #2a78d6;
+  --chunk-swatch-1: #eb6834;
+  --chunk-swatch-2: #1baf7a;
+  --chunk-swatch-3: #eda100;
+  --chunk-swatch-4: #e87ba4;
+  --chunk-swatch-5: #008300;
+  --chunk-swatch-6: #4a3aa7;
+  --chunk-swatch-7: #e34948;
+
+  --diverging-pos: #2a78d6;
+  --diverging-neg: #e34948;
+  --diverging-mid: #f0efec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chunk-color-0: rgba(57, 135, 229, 0.28);
+    --chunk-color-1: rgba(217, 89, 38, 0.28);
+    --chunk-color-2: rgba(25, 158, 112, 0.28);
+    --chunk-color-3: rgba(201, 133, 0, 0.3);
+    --chunk-color-4: rgba(213, 81, 129, 0.3);
+    --chunk-color-5: rgba(0, 131, 0, 0.26);
+    --chunk-color-6: rgba(144, 133, 233, 0.3);
+    --chunk-color-7: rgba(230, 103, 103, 0.3);
+
+    --chunk-swatch-0: #3987e5;
+    --chunk-swatch-1: #d95926;
+    --chunk-swatch-2: #199e70;
+    --chunk-swatch-3: #c98500;
+    --chunk-swatch-4: #d55181;
+    --chunk-swatch-5: #008300;
+    --chunk-swatch-6: #9085e9;
+    --chunk-swatch-7: #e66767;
+
+    --diverging-pos: #3987e5;
+    --diverging-neg: #e66767;
+    --diverging-mid: #383835;
+  }
+}
