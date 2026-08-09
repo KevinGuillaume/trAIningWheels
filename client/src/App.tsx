@@ -1,5 +1,6 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home.tsx'
+import Rag from './pages/Rag.tsx'
 
 function App() {
   return (
@@ -16,10 +17,22 @@ function App() {
         >
           Home
         </NavLink>
+        <NavLink
+          to="/rag"
+          end
+          className={({ isActive }) =>
+            `rounded-md px-3 py-1.5 text-sm ${
+              isActive ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'
+            }`
+          }
+        >
+          RAG
+        </NavLink>
       </nav>
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/rag" element={<Rag />} />
       </Routes>
     </>
   )
