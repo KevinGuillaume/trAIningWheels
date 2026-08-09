@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes tw-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0, -14px);
+  }
+}
+
 :root {
   --chunk-color-0: rgba(42, 120, 214, 0.16);
   --chunk-color-1: rgba(235, 104, 52, 0.16);
