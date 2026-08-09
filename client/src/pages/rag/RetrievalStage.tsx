@@ -1,8 +1,7 @@
-import { useState } from 'react'
 import type { EmbeddableChunk } from '../../lib/embeddableChunks'
-import type { PCAFit, Point2D } from '../../lib/pca'
+import type { PCAFit } from '../../lib/pca'
 import type { PlotLayout } from '../../lib/plotLayout'
-import { cosineSimilarity } from '../../lib/vectorMath'
+import type { SearchResult } from '../../lib/retrieval'
 import type { EmbedStatus } from '../../lib/useEmbeddings'
 
 interface RetrievalStageProps {
@@ -10,20 +9,18 @@ interface RetrievalStageProps {
   vectors: number[][] | null
   pcaFit: PCAFit | null
   layout: PlotLayout | null
-  embed: (texts: string[]) => Promise<number[][]>
   corpusStatus: EmbedStatus
   corpusProgress: number
   onComputeCorpus: () => void
-}
 
-interface RankedChunk {
-  chunk: EmbeddableChunk
-  score: number
-}
-
-interface SearchResult {
-  queryPoint: Point2D
-  ranked: RankedChunk[]
+  queryText: string
+  onQueryTextChange: (text: string) => void
+  topK: number
+  onTopKChange: (k: number) => void
+  isSearching: boolean
+  searchError: string | null
+  result: SearchResult | null
+  onSearch: (text: string) => void
 }
 
 const SUGGESTIONS = [
@@ -42,37 +39,18 @@ export default function RetrievalStage({
   vectors,
   pcaFit,
   layout,
-  embed,
   corpusStatus,
   corpusProgress,
   onComputeCorpus,
+  queryText,
+  onQueryTextChange,
+  topK,
+  onTopKChange,
+  isSearching,
+  searchError,
+  result,
+  onSearch,
 }: RetrievalStageProps) {
-  const [queryText, setQueryText] = useState('')
-  const [topK, setTopK] = useState(Math.min(3, chunks.length))
-  const [isSearching, setIsSearching] = useState(false)
-  const [searchError, setSearchError] = useState<string | null>(null)
-  const [result, setResult] = useState<SearchResult | null>(null)
-
-  const runSearch = async (text: string) => {
-    const query = text.trim()
-    if (!query || !vectors || !pcaFit) return
-
-    setIsSearching(true)
-    setSearchError(null)
-    try {
-      const [queryVector] = await embed([query])
-      const queryPoint = pcaFit.project(queryVector)
-      const ranked = chunks
-        .map((chunk, i) => ({ chunk, score: cosineSimilarity(queryVector, vectors[i]) }))
-        .sort((a, b) => b.score - a.score)
-      setResult({ queryPoint, ranked })
-    } catch (err) {
-      setSearchError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setIsSearching(false)
-    }
-  }
-
   const plotData = (() => {
     if (!pcaFit || !layout || !result) return null
     const { scaleX, scaleY, width, height, padding } = layout
@@ -137,13 +115,13 @@ export default function RetrievalStage({
                 id="query"
                 type="text"
                 value={queryText}
-                onChange={(e) => setQueryText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && runSearch(queryText)}
+                onChange={(e) => onQueryTextChange(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && onSearch(queryText)}
                 placeholder="e.g. Who won the Super Bowl?"
                 className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 focus:border-gray-500 focus:outline-none"
               />
               <button
-                onClick={() => runSearch(queryText)}
+                onClick={() => onSearch(queryText)}
                 disabled={isSearching || !queryText.trim()}
                 className="rounded-md bg-gray-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
               >
@@ -155,8 +133,8 @@ export default function RetrievalStage({
                 <button
                   key={s}
                   onClick={() => {
-                    setQueryText(s)
-                    runSearch(s)
+                    onQueryTextChange(s)
+                    onSearch(s)
                   }}
                   className="rounded-full bg-gray-100 px-2.5 py-1 text-xs text-gray-600 hover:bg-gray-200"
                 >
@@ -178,7 +156,7 @@ export default function RetrievalStage({
               max={chunks.length}
               step={1}
               value={topK}
-              onChange={(e) => setTopK(Number(e.target.value))}
+              onChange={(e) => onTopKChange(Number(e.target.value))}
               className="mt-2 w-full accent-gray-900"
             />
           </div>

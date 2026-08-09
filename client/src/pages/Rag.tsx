@@ -2,9 +2,11 @@ import { useMemo, useState } from 'react'
 import ChunkingStage from './rag/ChunkingStage'
 import EmbeddingStage from './rag/EmbeddingStage'
 import RetrievalStage from './rag/RetrievalStage'
+import PromptAssemblyStage from './rag/PromptAssemblyStage'
 import { buildEmbeddableChunks } from '../lib/embeddableChunks'
 import { fitPCA2D } from '../lib/pca'
 import { createPlotLayout } from '../lib/plotLayout'
+import { runRetrieval, type SearchResult } from '../lib/retrieval'
 import { useEmbeddings } from '../lib/useEmbeddings'
 
 const PLOT_WIDTH = 480
@@ -15,7 +17,7 @@ const STAGES = [
   { id: 'chunking', label: 'Chunking', available: true },
   { id: 'embedding', label: 'Embedding', available: true },
   { id: 'retrieval', label: 'Retrieval', available: true },
-  { id: 'prompt', label: 'Prompt assembly', available: false },
+  { id: 'prompt', label: 'Prompt assembly', available: true },
   { id: 'generation', label: 'Generation', available: false },
 ] as const
 
@@ -24,9 +26,9 @@ type StageId = (typeof STAGES)[number]['id']
 export default function Rag() {
   const [activeStage, setActiveStage] = useState<StageId>('chunking')
 
-  // Shared across Embedding and Retrieval: both need the same chunk set, the
-  // same computed vectors, and the same PCA axes so a query lands in a space
-  // that's consistent with what Embedding already showed.
+  // Shared across Embedding, Retrieval, and Prompt assembly: all three need the
+  // same chunk set, the same computed vectors, and the same PCA axes so a query
+  // lands in a space that's consistent with what Embedding already showed.
   const chunks = useMemo(buildEmbeddableChunks, [])
   const { embed, status, progress, error } = useEmbeddings()
   const [vectors, setVectors] = useState<number[][] | null>(null)
@@ -43,6 +45,30 @@ export default function Rag() {
       setVectors(result)
     } catch {
       // error state is already surfaced via useEmbeddings()
+    }
+  }
+
+  // Retrieval state lives here (not inside RetrievalStage) because Prompt
+  // assembly needs to pick up wherever the last search left off.
+  const [queryText, setQueryText] = useState('')
+  const [topK, setTopK] = useState(3)
+  const [isSearching, setIsSearching] = useState(false)
+  const [searchError, setSearchError] = useState<string | null>(null)
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
+
+  const runSearch = async (text: string) => {
+    const query = text.trim()
+    if (!query || !vectors || !pcaFit) return
+
+    setIsSearching(true)
+    setSearchError(null)
+    try {
+      const result = await runRetrieval(query, chunks, vectors, pcaFit, embed)
+      setSearchResult(result)
+    } catch (err) {
+      setSearchError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setIsSearching(false)
     }
   }
 
@@ -94,10 +120,24 @@ export default function Rag() {
           vectors={vectors}
           pcaFit={pcaFit}
           layout={plotLayout}
-          embed={embed}
           corpusStatus={status}
           corpusProgress={progress}
           onComputeCorpus={computeCorpusEmbeddings}
+          queryText={queryText}
+          onQueryTextChange={setQueryText}
+          topK={topK}
+          onTopKChange={setTopK}
+          isSearching={isSearching}
+          searchError={searchError}
+          result={searchResult}
+          onSearch={runSearch}
+        />
+      )}
+      {activeStage === 'prompt' && (
+        <PromptAssemblyStage
+          result={searchResult}
+          topK={topK}
+          onGoToRetrieval={() => setActiveStage('retrieval')}
         />
       )}
     </div>
