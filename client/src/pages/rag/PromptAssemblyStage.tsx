@@ -1,15 +1,22 @@
 import { useState } from 'react'
-import { assemblePrompt } from '../../lib/promptAssembly'
+import { assemblePrompt, instructionFor } from '../../lib/promptAssembly'
 import type { SearchResult } from '../../lib/retrieval'
 
 interface PromptAssemblyStageProps {
   result: SearchResult | null
   topK: number
+  strictGrounding: boolean
+  onStrictGroundingChange: (value: boolean) => void
   onGoToRetrieval: () => void
 }
 
-export default function PromptAssemblyStage({ result, topK, onGoToRetrieval }: PromptAssemblyStageProps) {
-  const [strictGrounding, setStrictGrounding] = useState(true)
+export default function PromptAssemblyStage({
+  result,
+  topK,
+  strictGrounding,
+  onStrictGroundingChange,
+  onGoToRetrieval,
+}: PromptAssemblyStageProps) {
   const [copied, setCopied] = useState(false)
 
   const matches = result ? result.ranked.slice(0, topK) : []
@@ -49,7 +56,7 @@ export default function PromptAssemblyStage({ result, topK, onGoToRetrieval }: P
               <input
                 type="checkbox"
                 checked={strictGrounding}
-                onChange={(e) => setStrictGrounding(e.target.checked)}
+                onChange={(e) => onStrictGroundingChange(e.target.checked)}
                 className="h-4 w-4 accent-gray-900"
               />
               Refuse to answer if the context doesn't contain it
@@ -76,17 +83,7 @@ export default function PromptAssemblyStage({ result, topK, onGoToRetrieval }: P
             </p>
             <div className="flex flex-col gap-2">
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm italic text-gray-600">
-                {strictGrounding ? (
-                  <>
-                    Answer the question using only the context below. If the context does not contain
-                    the answer, say "I don't know" — do not use outside knowledge.
-                  </>
-                ) : (
-                  <>
-                    Answer the question using the context below as your primary source. If it's
-                    incomplete, you may fill gaps with your own knowledge.
-                  </>
-                )}
+                {instructionFor({ strictGrounding })}
               </div>
 
               {matches.map((m, i) => (

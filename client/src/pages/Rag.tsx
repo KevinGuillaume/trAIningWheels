@@ -3,6 +3,7 @@ import ChunkingStage from './rag/ChunkingStage'
 import EmbeddingStage from './rag/EmbeddingStage'
 import RetrievalStage from './rag/RetrievalStage'
 import PromptAssemblyStage from './rag/PromptAssemblyStage'
+import GenerationStage from './rag/GenerationStage'
 import { buildEmbeddableChunks } from '../lib/embeddableChunks'
 import { fitPCA2D } from '../lib/pca'
 import { createPlotLayout } from '../lib/plotLayout'
@@ -18,7 +19,7 @@ const STAGES = [
   { id: 'embedding', label: 'Embedding', available: true },
   { id: 'retrieval', label: 'Retrieval', available: true },
   { id: 'prompt', label: 'Prompt assembly', available: true },
-  { id: 'generation', label: 'Generation', available: false },
+  { id: 'generation', label: 'Generation', available: true },
 ] as const
 
 type StageId = (typeof STAGES)[number]['id']
@@ -55,6 +56,7 @@ export default function Rag() {
   const [isSearching, setIsSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
+  const [strictGrounding, setStrictGrounding] = useState(true)
 
   const runSearch = async (text: string) => {
     const query = text.trim()
@@ -137,7 +139,17 @@ export default function Rag() {
         <PromptAssemblyStage
           result={searchResult}
           topK={topK}
+          strictGrounding={strictGrounding}
+          onStrictGroundingChange={setStrictGrounding}
           onGoToRetrieval={() => setActiveStage('retrieval')}
+        />
+      )}
+      {activeStage === 'generation' && (
+        <GenerationStage
+          result={searchResult}
+          topK={topK}
+          strictGrounding={strictGrounding}
+          onGoToPrompt={() => setActiveStage('prompt')}
         />
       )}
     </div>
