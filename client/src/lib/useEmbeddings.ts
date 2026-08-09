@@ -58,5 +58,13 @@ export function useEmbeddings() {
     })
   }, [])
 
-  return { embed, status, progress, error }
+  // Lets a caller invalidate a previous embed() result — e.g. when the chunks
+  // being embedded changed upstream and old vectors no longer line up with them.
+  const reset = useCallback(() => {
+    setStatus('idle')
+    setProgress(0)
+    setError(null)
+  }, [])
+
+  return { embed, status, progress, error, reset }
 }

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
+import PipelineDiagram from './rag/PipelineDiagram'
 import ChunkingStage from './rag/ChunkingStage'
 import EmbeddingStage from './rag/EmbeddingStage'
 import RetrievalStage from './rag/RetrievalStage'
 import PromptAssemblyStage from './rag/PromptAssemblyStage'
 import GenerationStage from './rag/GenerationStage'
+import { DEFAULT_MAX_CHARS } from '../lib/chunking'
 import { buildEmbeddableChunks } from '../lib/embeddableChunks'
 import { fitPCA2D } from '../lib/pca'
 import { createPlotLayout } from '../lib/plotLayout'
@@ -24,14 +26,25 @@ const STAGES = [
 
 type StageId = (typeof STAGES)[number]['id']
 
+// Chunking and embedding build the corpus index once, up front. Retrieval,
+// prompt assembly, and generation all happen fresh for every question asked
+// against that index — including a second, on-the-fly use of the embedding
+// model to embed the query itself.
+const STAGE_GROUPS = [
+  { label: 'Populate the index', span: 2 },
+  { label: 'Answer a query', span: 3 },
+] as const
+
 export default function Rag() {
   const [activeStage, setActiveStage] = useState<StageId>('chunking')
 
-  // Shared across Embedding, Retrieval, and Prompt assembly: all three need the
-  // same chunk set, the same computed vectors, and the same PCA axes so a query
-  // lands in a space that's consistent with what Embedding already showed.
-  const chunks = useMemo(buildEmbeddableChunks, [])
-  const { embed, status, progress, error } = useEmbeddings()
+  // Shared across Chunking, Embedding, Retrieval, and Prompt assembly: all
+  // stages need the same chunk set, the same computed vectors, and the same
+  // PCA axes so a query lands in a space that's consistent with what
+  // Embedding already showed.
+  const [maxChars, setMaxChars] = useState(DEFAULT_MAX_CHARS)
+  const chunks = useMemo(() => buildEmbeddableChunks(maxChars), [maxChars])
+  const { embed, status, progress, error, reset: resetEmbeddings } = useEmbeddings()
   const [vectors, setVectors] = useState<number[][] | null>(null)
   const pcaFit = useMemo(() => (vectors ? fitPCA2D(vectors) : null), [vectors])
   const plotLayout = useMemo(
@@ -58,6 +71,18 @@ export default function Rag() {
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null)
   const [strictGrounding, setStrictGrounding] = useState(true)
 
+  // Changing maxChars changes the corpus's chunk boundaries, which makes any
+  // previously computed vectors and search results stale — clear them here,
+  // right where the change originates, rather than reacting to it after the
+  // fact.
+  const handleMaxCharsChange = (value: number) => {
+    setMaxChars(value)
+    setVectors(null)
+    setSearchResult(null)
+    setSearchError(null)
+    resetEmbeddings()
+  }
+
   const runSearch = async (text: string) => {
     const query = text.trim()
     if (!query || !vectors || !pcaFit) return
@@ -83,27 +108,18 @@ export default function Rag() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-b border-gray-200 pb-4">
-        {STAGES.map((stage, i) => (
-          <button
-            key={stage.id}
-            disabled={!stage.available}
-            onClick={() => setActiveStage(stage.id)}
-            className={`rounded-md px-3 py-1.5 text-sm ${
-              !stage.available
-                ? 'cursor-not-allowed bg-gray-50 text-gray-400'
-                : stage.id === activeStage
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            {i + 1}. {stage.label}
-            {!stage.available && <span className="ml-1.5 text-gray-300">soon</span>}
-          </button>
-        ))}
+      <div className="border-b border-gray-200 pb-4">
+        <PipelineDiagram<StageId>
+          stages={STAGES}
+          groups={STAGE_GROUPS}
+          activeStage={activeStage}
+          onSelect={setActiveStage}
+        />
       </div>
 
-      {activeStage === 'chunking' && <ChunkingStage />}
+      {activeStage === 'chunking' && (
+        <ChunkingStage maxChars={maxChars} onMaxCharsChange={handleMaxCharsChange} chunkCount={chunks.length} />
+      )}
       {activeStage === 'embedding' && (
         <EmbeddingStage
           chunks={chunks}

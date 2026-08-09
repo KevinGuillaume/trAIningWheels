@@ -7,11 +7,11 @@ export interface EmbeddableChunk extends Chunk {
   docIndex: number
 }
 
-export function buildEmbeddableChunks(): EmbeddableChunk[] {
+export function buildEmbeddableChunks(maxChars: number = DEFAULT_MAX_CHARS): EmbeddableChunk[] {
   return corpus.flatMap((doc, docIndex) =>
     // chunkDocument's ids ("c0", "c1", ...) are only unique within one document —
     // prefix with docId so they stay unique once every document is flattened together.
-    chunkDocument(doc.text, DEFAULT_MAX_CHARS).map((chunk) => ({
+    chunkDocument(doc.text, maxChars).map((chunk) => ({
       ...chunk,
       id: `${doc.id}-${chunk.id}`,
       docId: doc.id,

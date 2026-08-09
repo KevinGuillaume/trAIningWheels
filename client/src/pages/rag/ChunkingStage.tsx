@@ -1,13 +1,18 @@
 import { useMemo, useState } from 'react'
 import { corpus } from '../../data/corpus'
-import { chunkDocument, DEFAULT_MAX_CHARS } from '../../lib/chunking'
+import { chunkDocument } from '../../lib/chunking'
 
 const MIN_CHARS = 60
 const MAX_CHARS = 700
 
-export default function ChunkingStage() {
+interface ChunkingStageProps {
+  maxChars: number
+  onMaxCharsChange: (value: number) => void
+  chunkCount: number
+}
+
+export default function ChunkingStage({ maxChars, onMaxCharsChange, chunkCount }: ChunkingStageProps) {
   const [docId, setDocId] = useState(corpus[0].id)
-  const [maxChars, setMaxChars] = useState(DEFAULT_MAX_CHARS)
 
   const doc = corpus.find((d) => d.id === docId) ?? corpus[0]
   const chunks = useMemo(() => chunkDocument(doc.text, maxChars), [doc.text, maxChars])
@@ -24,6 +29,11 @@ export default function ChunkingStage() {
           Documents get split into chunks before anything else happens. Drag the slider to change
           the max chunk size and watch what happens at the extremes: too small and paragraphs get
           sliced mid-sentence; too large and unrelated paragraphs get merged into one chunk.
+        </p>
+        <p className="mt-2 text-xs text-gray-500">
+          This is the same setting used to chunk your whole knowledge base — right now that's{' '}
+          <span className="font-medium text-gray-700">{chunkCount} chunks</span> across all documents,
+          feeding Stage 2 onward.
         </p>
       </div>
 
@@ -62,7 +72,7 @@ export default function ChunkingStage() {
           max={MAX_CHARS}
           step={10}
           value={maxChars}
-          onChange={(e) => setMaxChars(Number(e.target.value))}
+          onChange={(e) => onMaxCharsChange(Number(e.target.value))}
           className="mt-3 w-full accent-gray-900"
         />
         <div className="mt-1 flex justify-between text-xs text-gray-400">
