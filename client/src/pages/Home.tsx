@@ -4,7 +4,7 @@ const NETWORK_PATH = 'M20 30L90 15M90 15L60 80M60 80L20 30M60 80L150 55M60 80L20
 const NETWORK_PATH_MIRRORED = 'M20 30L90 15M90 15L60 80M60 80L20 30M60 80L150 100M60 80L20 120'
 
 const CONCEPTS = [
-  { label: 'Transformers & Attention' },
+  { label: 'Model Context Protocol' },
   { label: 'Agents & Tool Use' },
 ]
 
@@ -79,10 +79,16 @@ export default function Home() {
           a slide deck.
         </p>
         <Link
-          to="/rag"
+          to="/llm-basics"
           className="inline-flex items-center gap-1.5 border-b border-[#14161a] pb-0.5 text-[15px] font-semibold text-[#14161a] hover:border-[#2563eb] hover:text-[#2563eb]"
         >
-          Start with RAG <span aria-hidden="true">→</span>
+          Start with LLM Basics <span aria-hidden="true">→</span>
+        </Link>
+        <Link
+          to="/rag"
+          className="mt-3 text-sm font-medium text-[#9a9da5] hover:text-[#5b5f68]"
+        >
+          Already know the basics? Jump to RAG →
         </Link>
 
         <div className="mt-[88px] flex flex-col items-center gap-[18px]">

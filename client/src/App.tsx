@@ -1,5 +1,6 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home.tsx'
+import LlmBasics from './pages/LlmBasics.tsx'
 import Rag from './pages/Rag.tsx'
 
 function App() {
@@ -31,24 +32,41 @@ function App() {
           </span>
           <span className="text-xs font-medium text-[#9a9da5]">AI Learning Made Simple</span>
         </div>
-        <nav className="flex gap-2">
+        <nav className="flex gap-6">
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
-              `rounded-[7px] px-4 py-2 text-sm font-semibold ${
-                isActive ? 'bg-[#14161a] text-white' : 'text-[#5b5f68] hover:bg-[#f2f1ed] hover:text-[#14161a]'
+              `border-b-2 pt-2 pb-[6px] text-sm font-semibold transition-colors ${
+                isActive
+                  ? 'border-[#14161a] text-[#14161a]'
+                  : 'border-transparent text-[#5b5f68] hover:text-[#14161a]'
               }`
             }
           >
             Home
           </NavLink>
           <NavLink
+            to="/llm-basics"
+            end
+            className={({ isActive }) =>
+              `border-b-2 pt-2 pb-[6px] text-sm font-semibold transition-colors ${
+                isActive
+                  ? 'border-[#14161a] text-[#14161a]'
+                  : 'border-transparent text-[#5b5f68] hover:text-[#14161a]'
+              }`
+            }
+          >
+            LLM Basics
+          </NavLink>
+          <NavLink
             to="/rag"
             end
             className={({ isActive }) =>
-              `rounded-[7px] px-4 py-2 text-sm font-semibold ${
-                isActive ? 'bg-[#14161a] text-white' : 'text-[#5b5f68] hover:bg-[#f2f1ed] hover:text-[#14161a]'
+              `border-b-2 pt-2 pb-[6px] text-sm font-semibold transition-colors ${
+                isActive
+                  ? 'border-[#14161a] text-[#14161a]'
+                  : 'border-transparent text-[#5b5f68] hover:text-[#14161a]'
               }`
             }
           >
@@ -59,6 +77,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/llm-basics" element={<LlmBasics />} />
         <Route path="/rag" element={<Rag />} />
       </Routes>
     </div>

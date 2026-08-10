@@ -53,6 +53,26 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M10 2 L11.6 7.6 L17 9.2 L11.6 10.8 L10 16.4 L8.4 10.8 L3 9.2 L8.4 7.6 Z" />
     </svg>
   ),
+  intro: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
+      <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="10" cy="6.2" r="1" fill="currentColor" />
+    </svg>
+  ),
+  tokenization: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
+      <rect x="1.5" y="8" width="6" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="8.5" y="8" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="14" y="8" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  ),
+  context: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
+      <rect x="1.5" y="6" width="17" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+      <rect x="3" y="7.5" width="9" height="5" rx="0.75" fill="currentColor" />
+    </svg>
+  ),
 }
 
 function Arrow({ dim }: { dim: boolean }) {
@@ -86,12 +106,12 @@ interface DiagramGroup {
 
 export default function PipelineDiagram<T extends string>({
   stages,
-  groups,
+  groups = [],
   activeStage,
   onSelect,
 }: {
   stages: readonly DiagramStage<T>[]
-  groups: readonly DiagramGroup[]
+  groups?: readonly DiagramGroup[]
   activeStage: T
   onSelect: (id: T) => void
 }) {
