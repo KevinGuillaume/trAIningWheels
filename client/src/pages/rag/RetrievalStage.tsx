@@ -79,7 +79,7 @@ export default function RetrievalStage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">3. Retrieval</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Retrieval</h2>
         <p className="mt-1 max-w-2xl text-sm text-gray-600">
           Type a question, and it gets embedded with the exact same model used on the corpus. Because
           those vectors are normalized, comparing the query to every chunk is just a dot product —

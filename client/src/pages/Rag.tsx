@@ -37,6 +37,7 @@ const STAGE_GROUPS = [
 
 export default function Rag() {
   const [activeStage, setActiveStage] = useState<StageId>('chunking')
+  const currentStageLabel = STAGES.find((s) => s.id === activeStage)?.label ?? ''
 
   // Shared across Chunking, Embedding, Retrieval, and Prompt assembly: all
   // stages need the same chunk set, the same computed vectors, and the same
@@ -103,12 +104,24 @@ export default function Rag() {
     <div className="mx-auto flex max-w-3xl flex-col gap-6 p-8">
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">RAG, step by step</h1>
-        <p className="mt-1 text-sm text-gray-600">
-          A walkthrough of retrieval-augmented generation, one pipeline stage at a time.
+        <p className="mt-1 max-w-2xl text-sm text-gray-600">
+          RAG (Retrieval-Augmented Generation) lets a language model answer using facts it was never
+          trained on. Rather than trusting the model's memory alone, you first{' '}
+          <span className="underline decoration-gray-400 underline-offset-2">populate the index</span>{' '}
+          from your own documents ahead of time, then{' '}
+          <span className="underline decoration-gray-400 underline-offset-2">answer a query</span> by
+          searching that index for the most relevant pieces and handing them to the model as context
+          before it generates a reply.
+        </p>
+        <p className="mt-2 max-w-2xl text-sm text-gray-600">
+          This is what makes RAG so useful in practice: point it at your company's handbooks, policies,
+          or internal docs, and a model can answer questions grounded in that specific knowledge
+          without retraining it every time that knowledge changes.
         </p>
       </div>
 
       <div className="border-b border-gray-200 pb-4">
+        <h2 className="mb-3 text-xs font-semibold tracking-wide text-gray-500 uppercase">RAG Pipeline</h2>
         <PipelineDiagram<StageId>
           stages={STAGES}
           groups={STAGE_GROUPS}
@@ -116,6 +129,10 @@ export default function Rag() {
           onSelect={setActiveStage}
         />
       </div>
+
+      <h2 className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+        Current Step: <span className="text-gray-900">{currentStageLabel}</span>
+      </h2>
 
       {activeStage === 'chunking' && (
         <ChunkingStage maxChars={maxChars} onMaxCharsChange={handleMaxCharsChange} chunkCount={chunks.length} />

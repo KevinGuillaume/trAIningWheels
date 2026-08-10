@@ -32,7 +32,7 @@ export default function PromptAssemblyStage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">4. Prompt assembly</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Prompt assembly</h2>
         <p className="mt-1 max-w-2xl text-sm text-gray-600">
           The retrieved chunks aren't useful on their own — they get woven into one prompt alongside an
           instruction and the original question. This step is pure string templating, no model

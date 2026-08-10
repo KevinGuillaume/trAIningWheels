@@ -44,7 +44,7 @@ export default function GenerationStage({ result, topK, strictGrounding, onGoToP
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">5. Generation</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Generation</h2>
         <p className="mt-1 max-w-2xl text-sm text-gray-600">
           A real small language model (Qwen2.5-0.5B-Instruct, in-browser, ~300MB, cached after first
           load) answers your question twice: once with nothing but its own training, once with the

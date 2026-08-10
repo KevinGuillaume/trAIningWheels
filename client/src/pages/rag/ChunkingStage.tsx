@@ -24,7 +24,7 @@ export default function ChunkingStage({ maxChars, onMaxCharsChange, chunkCount }
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">1. Chunking</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Chunking</h2>
         <p className="mt-1 max-w-2xl text-sm text-gray-600">
           Documents get split into chunks before anything else happens. Drag the slider to change
           the max chunk size and watch what happens at the extremes: too small and paragraphs get

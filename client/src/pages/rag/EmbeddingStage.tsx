@@ -86,7 +86,7 @@ export default function EmbeddingStage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">2. Embedding</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Embedding</h2>
         <p className="mt-1 max-w-2xl text-sm text-gray-600">
           Each of the {chunks.length} chunks from Stage 1 gets converted into a 384-number vector by
           a real embedding model running entirely in your browser (HuggingFace for the win). So no
