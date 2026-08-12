@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom'
 const NETWORK_PATH = 'M20 30L90 15M90 15L60 80M60 80L20 30M60 80L150 55M60 80L20 120'
 const NETWORK_PATH_MIRRORED = 'M20 30L90 15M90 15L60 80M60 80L20 30M60 80L150 100M60 80L20 120'
 
-const CONCEPTS = [
-  { label: 'Model Context Protocol' },
-  { label: 'Agents & Tool Use' },
-]
+const CONCEPTS = [{ label: 'Model Context Protocol' }]
 
 function NetworkDecoration({ path, cy4 }: { path: string; cy4: number }) {
   return (

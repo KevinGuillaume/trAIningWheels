@@ -73,6 +73,13 @@ const ICONS: Record<string, ReactNode> = {
       <rect x="3" y="7.5" width="9" height="5" rx="0.75" fill="currentColor" />
     </svg>
   ),
+  tools: (
+    <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5">
+      <circle cx="6" cy="6" r="3" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="8.2" y1="8.2" x2="15" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <rect x="13.6" y="13.6" width="3.4" height="3.4" rx="0.8" fill="currentColor" transform="rotate(45 15.3 15.3)" />
+    </svg>
+  ),
 }
 
 function Arrow({ dim }: { dim: boolean }) {

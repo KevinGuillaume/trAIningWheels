@@ -1,4 +1,5 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
+import Agents from './pages/Agents.tsx'
 import Home from './pages/Home.tsx'
 import LlmBasics from './pages/LlmBasics.tsx'
 import Rag from './pages/Rag.tsx'
@@ -72,6 +73,19 @@ function App() {
           >
             RAG
           </NavLink>
+          <NavLink
+            to="/agents"
+            end
+            className={({ isActive }) =>
+              `border-b-2 pt-2 pb-[6px] text-sm font-semibold transition-colors ${
+                isActive
+                  ? 'border-[#14161a] text-[#14161a]'
+                  : 'border-transparent text-[#5b5f68] hover:text-[#14161a]'
+              }`
+            }
+          >
+            Agents
+          </NavLink>
         </nav>
       </header>
 
@@ -79,6 +93,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/llm-basics" element={<LlmBasics />} />
         <Route path="/rag" element={<Rag />} />
+        <Route path="/agents" element={<Agents />} />
       </Routes>
     </div>
   )
