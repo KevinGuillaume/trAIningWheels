@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import type { ToolSchema } from './agentTools'
 import type { ChatMessage } from './promptAssembly'
 
 export type GenerateStatus = 'idle' | 'loading-model' | 'generating' | 'ready' | 'error'
@@ -19,7 +20,7 @@ export function useGeneration() {
   const workerRef = useRef<Worker | null>(null)
   const requestId = useRef(0)
 
-  const generate = useCallback((messages: ChatMessage[], maxNewTokens = 120) => {
+  const generate = useCallback((messages: ChatMessage[], maxNewTokens = 120, tools?: ToolSchema[]) => {
     return new Promise<string>((resolve, reject) => {
       if (!workerRef.current) {
         workerRef.current = new Worker(new URL('../workers/generationWorker.ts', import.meta.url), {
@@ -55,7 +56,7 @@ export function useGeneration() {
       }
 
       worker.addEventListener('message', handleMessage)
-      worker.postMessage({ type: 'generate', id, messages, maxNewTokens })
+      worker.postMessage({ type: 'generate', id, messages, maxNewTokens, tools })
     })
   }, [])
 

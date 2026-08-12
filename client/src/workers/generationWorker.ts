@@ -1,4 +1,5 @@
 import { pipeline, env, type TextGenerationPipeline } from '@huggingface/transformers'
+import type { ToolSchema } from '../lib/agentTools'
 import type { ChatMessage } from '../lib/promptAssembly'
 
 env.allowLocalModels = false
@@ -8,6 +9,7 @@ interface GenerateRequest {
   id: number
   messages: ChatMessage[]
   maxNewTokens: number
+  tools?: ToolSchema[]
 }
 
 let generatorPromise: Promise<TextGenerationPipeline> | null = null
@@ -27,12 +29,12 @@ function loadGenerator(id: number) {
 }
 
 addEventListener('message', async (event: MessageEvent<GenerateRequest>) => {
-  const { id, messages, maxNewTokens } = event.data
+  const { id, messages, maxNewTokens, tools } = event.data
   try {
     const generator = await loadGenerator(id)
     postMessage({ type: 'status', id, status: 'generating' })
 
-    const output = await generator(messages, { max_new_tokens: maxNewTokens, do_sample: false })
+    const output = await generator(messages, { max_new_tokens: maxNewTokens, do_sample: false, tools })
     const first = Array.isArray(output) ? output[0] : output
     const generatedText = first.generated_text
     const lastTurn = Array.isArray(generatedText) ? generatedText.at(-1) : null
